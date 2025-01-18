@@ -48,8 +48,39 @@ class ContactController {
     return response.json(contact);
   }
 
-  update() {
+  async update(request, response) {
     // Update a contact
+
+    const { id } = request.params;
+
+    const { name, email, phone, category_id } = request.body;
+
+    const contactExists = await ContactsRepository.findById(id);
+
+    if (!contactExists) {
+      return response.status(404).json({ error: 'Contact not found' });
+    }
+
+    if (!name) {
+      return response.status(400).json({ error: 'Name is required' });
+    }
+
+    const contactByEmail = await ContactsRepository.findByEmail(email);
+
+    if (contactByEmail && contactByEmail.id !== id) {
+      return response
+        .status(400)
+        .json({ error: 'This email is already being used' });
+    }
+
+    const updatedContact = await ContactsRepository.update(id, {
+      name,
+      email,
+      phone,
+      category_id,
+    });
+
+    return response.json(updatedContact);
   }
 
   async delete(request, response) {
