@@ -53,20 +53,17 @@ class ContactsRepository {
     return row;
   }
 
-  update(id, { name, email, phone, category_id }) {
-    return new Promise((resolve) => {
-      const contactIndex = contacts.findIndex((contact) => contact.id === id);
+  async update(id, { name, email, phone, category_id }) {
+    const [row] = await db.query(
+      `UPDATE contacts
+       SET name = $1, email = $2, phone = $3, category_id = $4
+       WHERE id = $5
+       RETURNING *
+      `,
+      [name, email, phone, category_id, id]
+    );
 
-      contacts[contactIndex] = {
-        ...contacts[contactIndex],
-        name,
-        email,
-        phone,
-        category_id,
-      };
-
-      resolve(contacts[contactIndex]);
-    });
+    return row;
   }
 
   delete(id) {
