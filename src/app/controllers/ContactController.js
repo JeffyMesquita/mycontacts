@@ -88,13 +88,6 @@ class ContactController {
     // Delete a contact
     const { id } = request.params;
 
-    const contact = await ContactsRepository.findById(id);
-
-    if (!contact) {
-      // Not found(404) - The server has not found anything matching the Request-URI
-      return response.status(404).json({ error: 'Contact not found' });
-    }
-
     await ContactsRepository.delete(id);
 
     // No content(204) - The server successfully processed the request and is not returning any content
